@@ -118,14 +118,6 @@ $(document).ready(function() {
             type: 'GET',
             dataType: 'json',
             url: pathIpsServer,
-            error: function(xhr, tStatus, e){
-                if(!xhr){
-                    alert(" Existe un error en la carga de datos ");
-                    alert(tStatus+"   "+e.message);
-                }else{
-                    alert("else: "+e.message);
-                }
-            },
             success: function(data) {
                 valorRespuesta = "<table style='width: 280px;'>";
                 for (var i = 0; i < data.length; i++) {
