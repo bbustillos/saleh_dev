@@ -118,7 +118,7 @@ $(document).ready(function() {
             type: 'GET',
             dataType: 'json',
             url: pathIpsServer,
-            error: function(xhr, tStatus, e){r4
+            error: function(xhr, tStatus, e){
                 if(!xhr){
                     alert(" Existe un error en la carga de datos ");
                     alert(tStatus+"   "+e.message);
