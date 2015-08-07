@@ -20,4 +20,20 @@ class Controller extends CController
 	 * for more details on how to specify this property.
 	 */
 	public $breadcrumbs=array();
+
+	public function filterPutOnly($filterChain)
+	{
+		if(Yii::app()->getRequest()->getIsPutRequest())
+			$filterChain->run();
+		else
+			throw new CHttpException(400,Yii::t('yii','Su solicitud es inválida.'));
+	}
+
+	public function filterDeleteOnly($filterChain)
+	{
+		if(Yii::app()->getRequest()->getIsDeleteRequest())
+			$filterChain->run();
+		else
+			throw new CHttpException(400,Yii::t('yii','Su solicitud es inválida.'));
+	}
 }
