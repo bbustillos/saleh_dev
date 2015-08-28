@@ -3,6 +3,9 @@
 	'enableAjaxValidation'=>false,
 )); ?>
 
+<?php // Permite obtener el nombre del modelo desde un create statement con "ucwords($this->id)" ?>
+<?php // Para obtener el nombre de la tabla relacionada al modelo se obtiene con "$model->tableName()" ?>
+
 	<p class="help-block">Los campos <span class="required">*</span> son requeridos.</p>
 
 	<?php echo $form->errorSummary($model); ?>

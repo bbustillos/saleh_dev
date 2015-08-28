@@ -1,6 +1,6 @@
 <?php
 $this->breadcrumbs=array(
-	'Clases de Objeto de Ventas',
+	'Parametrización de Sincronización',
 );
 
 $this->menu=array(
@@ -9,10 +9,8 @@ $this->menu=array(
 );
 ?>
 
-<h3>Clases Objetos de Venta</h3>
+<h3>Parametrizaci&oacute;n de Sincronizaci&oacute;n</h3>
 <h4>Lista</h4>
-
-<?php // para la carga del modelo se necesita uncamente la accion "$dataProvider->modelClass" ?>
 
 <?php $this->widget('bootstrap.widgets.TbListView',array(
 	'dataProvider'=>$dataProvider,

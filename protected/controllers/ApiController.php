@@ -133,7 +133,7 @@ class ApiController extends Controller
             $sTipo = (array_key_exists('tipo', $_GET))?$_GET['tipo']:'';
             $sModelo = (array_key_exists('model', $_GET))?$_GET['model']:'';
             switch ($sTipo) {
-                case 'todo':
+                case 'todo': // Solo puede ser ejecutado por el servidor central (VERIFICAR)
                     // decodificar JSON
                     $aJsonResultado = $this->obtenerInformacionJSON();
                     // sacar un backup temporal de la tabla del modelo (pendiente)

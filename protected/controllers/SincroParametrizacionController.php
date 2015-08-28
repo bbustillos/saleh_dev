@@ -1,6 +1,6 @@
 <?php
 
-class SipHostsController extends Controller
+class SincroParametrizacionController extends Controller
 {
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
@@ -27,7 +27,7 @@ class SipHostsController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view', 'VerificarIPs'),
+				'actions'=>array('index','view', 'cargartabla', 'obtenercolumnas'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -61,14 +61,17 @@ class SipHostsController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$model=new SipHosts;
+		$model=new SincroParametrizacion;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['SipHosts']))
+		if(isset($_POST['SincroParametrizacion']))
 		{
-			$model->attributes=$_POST['SipHosts'];
+			$sNombreTabla = $_POST['SincroParametrizacion']['nombre_tabla'];
+			$sCampDet = implode("|", $_POST['SincroParametrizacion']['campos_det']);
+			$model->nombre_tabla = $sNombreTabla;
+			$model->campos_det = $sCampDet;
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -90,15 +93,18 @@ class SipHostsController extends Controller
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['SipHosts']))
+		if(isset($_POST['SincroParametrizacion']))
 		{
-			$model->attributes=$_POST['SipHosts'];
+			$sNombreTabla = $_POST['SincroParametrizacion']['nombre_tabla'];
+			$sCampDet = implode("|", $_POST['SincroParametrizacion']['campos_det']);
+			$model->nombre_tabla = $sNombreTabla;
+			$model->campos_det = $sCampDet;
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('update',array(
-			'model'=>$model,
+			'model'=>$model
 		));
 	}
 
@@ -106,7 +112,7 @@ class SipHostsController extends Controller
 	 * Deletes a particular model.
 	 * If deletion is successful, the browser will be redirected to the 'admin' page.
 	 * @param integer $id the ID of the model to be deleted
-	 */
+	 */			
 	public function actionDelete($id)
 	{
 		if(Yii::app()->request->isPostRequest)
@@ -119,7 +125,7 @@ class SipHostsController extends Controller
 				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 		}
 		else
-			throw new CHttpException(400,'Invalid request. Please do not repeat this request again.');
+			throw new CHttpException(400,'Solicitud Inválida. Por favor no repita la solicitud nuevamente.');
 	}
 
 	/**
@@ -127,7 +133,7 @@ class SipHostsController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('SipHosts');
+		$dataProvider=new CActiveDataProvider('SincroParametrizacion');
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -138,14 +144,74 @@ class SipHostsController extends Controller
 	 */
 	public function actionAdmin()
 	{
-		$model=new SipHosts('search');
+		$model=new SincroParametrizacion('search');
 		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['SipHosts']))
-			$model->attributes=$_GET['SipHosts'];
+		if(isset($_GET['SincroParametrizacion']))
+			$model->attributes=$_GET['SincroParametrizacion'];
 
 		$this->render('admin',array(
 			'model'=>$model,
 		));
+	}
+
+	/**
+	* Permite obtener las columnas de la tabla seleccionada
+	*/
+	public function actionObtenerColumnas()
+	{
+		$sTablaId = $_POST['nombre_tabla'];
+		$aryExtra = array('todo'=>'todo', 'dia'=>'dia', 'fecha'=>'inversa', 'inversa'=>'inversa');
+		$aTablas = Yii::app()->db->schema->getTableNames();
+		$sNombretabla = $aTablas[$sTablaId];
+		$aColumnas = Yii::app()->db->schema->getTable($sNombretabla)->columns;
+		$ary=array();
+		$iCount = 0;
+		foreach ($aryExtra as $key => $value) {
+			$ary[$iCount]['id'] = $key;
+			$ary[$iCount]['name'] = $key;
+			$iCount++;
+		}
+		foreach($aColumnas as $key => $obj)
+		{
+			$ary[$iCount]['id'] = $key;
+			$ary[$iCount]['name'] = $key;            
+			$iCount++;
+		}
+		echo json_encode($ary);
+	}
+
+	public function actionMenuSincron(){
+		$sNombreModelo = (array_key_exists('modelo', $_GET))?$_GET['modelo']:'';
+		if ($sNombreModelo != '') {
+			// Obtenemos el nombre de la tabla
+			// Hacemos una consulta para verificar si la tabla como tal tiene una configuracion de sincronizacion
+			// Si existe la configuracion la devolvemos en un Json
+		}
+	}
+
+	/**
+	* Permite obtener las columnas de la tabla seleccionada
+	*/
+	public function getColumnas($sTablaId)
+	{
+		$aryExtra = array('todo'=>'todo', 'dia'=>'dia', 'fecha'=>'inversa', 'inversa'=>'inversa');
+		$aTablas = Yii::app()->db->schema->getTableNames();
+		$sNombretabla = $aTablas[$sTablaId];
+		$aColumnas = Yii::app()->db->schema->getTable($sNombretabla)->columns;
+		$ary=array();
+		$iCount = 0;
+		foreach ($aryExtra as $key => $value) {
+			$ary[$iCount]['id'] = $key;
+			$ary[$iCount]['name'] = $key;
+			$iCount++;
+		}
+		foreach($aColumnas as $key => $obj)
+		{
+			$ary[$iCount]['id'] = $key;
+			$ary[$iCount]['name'] = $key;            
+			$iCount++;
+		}
+		return $ary;
 	}
 
 	/**
@@ -155,7 +221,7 @@ class SipHostsController extends Controller
 	 */
 	public function loadModel($id)
 	{
-		$model=SipHosts::model()->findByPk($id);
+		$model=SincroParametrizacion::model()->findByPk($id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
@@ -167,49 +233,11 @@ class SipHostsController extends Controller
 	 */
 	protected function performAjaxValidation($model)
 	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='sip-hosts-form')
+		if(isset($_POST['ajax']) && $_POST['ajax']==='sincro-parametrizacion-form')
 		{
 			echo CActiveForm::validate($model);
 			Yii::app()->end();
 		}
 	}
 
-		/**
-	 * verificarIPs Permite obtener verificar si las IPs registradas estan activas
-	 * @return JSON Devuelve las ips activas
-	 */
-	public function actionVerificarIPs ()
-	{
-		$contador = 0;
-		$aRespuesta = array();
-		$modelIPs = new SipHosts;
-		$aIPs = CHtml::listData(SipHosts::model()->findAll(), 'nombre', 'ip_host');
-		foreach ($aIPs as $key => $ip) {
-			$aRespuesta[$contador]['ip'] = $ip;
-			$aRespuesta[$contador]['estado'] = $this->url_exists($ip)? 'ON' : 'OFF';
-			$aRespuesta[$contador]['nombre'] = $key;
-			$contador++;
-		}
-		echo CJSON::encode($aRespuesta);
-	}
-
-	private function url_exists($ip) {
-		// identificar los tiempos de respuesta (respuesta > 2 seg o 3) => OFF
-		// tiempo de intento (dentro de un bucle > 10 seg) => OFF
-		$ch = @curl_init($ip);
-        @curl_setopt($ch, CURLOPT_HEADER, TRUE);
-        @curl_setopt($ch, CURLOPT_NOBODY, TRUE);
-        @curl_setopt($ch, CURLOPT_FOLLOWLOCATION, FALSE);
-        @curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        $status = array();
-        preg_match('/HTTP\/.* ([0-9]+) .*/', @curl_exec($ch) , $status);
-		if (is_array($status) && count($status)>0) {
-			if ($status['1'] == 200) {
-				$sEstado = true;
-			}
-		} else {
-			$sEstado = false;
-		}
-        return $sEstado;
-	} 
 }
