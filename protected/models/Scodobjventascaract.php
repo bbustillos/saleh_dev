@@ -34,13 +34,13 @@ class Scodobjventascaract extends CActiveRecord implements AjaxResponseInterface
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('id_cod_obj_venta, id_tipo_bus, cantidad_pisos, carga_maxima, observaciones', 'required'),
-			array('id_cod_obj_venta, id_tipo_bus, cantidad_pisos', 'numerical', 'integerOnly'=>true),
+			array('id_cod_obj_venta, id_tipo_bus, carga_maxima, observaciones, configuracion', 'required'),
+			array('id_cod_obj_venta, id_tipo_bus, ', 'numerical', 'integerOnly'=>true),
 			array('carga_maxima', 'numerical'),
 			array('imagen', 'file'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id_cod_obj_venta_car, id_cod_obj_venta, id_tipo_bus, cantidad_pisos, carga_maxima, imagen, observaciones', 'safe', 'on'=>'search'),
+			array('id_tipo_bus, carga_maxima, imagen, observaciones, configuracion', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -66,10 +66,10 @@ class Scodobjventascaract extends CActiveRecord implements AjaxResponseInterface
 			'id_cod_obj_venta_car' => 'Id',
 			'id_cod_obj_venta' => 'Id Objeto',
 			'id_tipo_bus' => 'Tipo Bus',
-			'cantidad_pisos' => 'Pisos',
 			'carga_maxima' => 'Carga Maxima',
 			'imagen' => 'Imagen',
 			'observaciones' => 'Observaciones',
+			'configuracion' => 'Configuración',
 		);
 	}
 
@@ -94,7 +94,6 @@ class Scodobjventascaract extends CActiveRecord implements AjaxResponseInterface
 		$criteria->compare('id_cod_obj_venta_car',$this->id_cod_obj_venta_car);
 		$criteria->compare('id_cod_obj_venta',$this->id_cod_obj_venta);
 		$criteria->compare('id_tipo_bus',$this->id_tipo_bus);
-		$criteria->compare('cantidad_pisos',$this->cantidad_pisos);
 		$criteria->compare('carga_maxima',$this->carga_maxima);
 		$criteria->compare('imagen',$this->imagen,true);
 		$criteria->compare('observaciones',$this->observaciones,true);

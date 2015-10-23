@@ -8,6 +8,6 @@ return array(
 	'connectionString' => 'mysql:host=localhost;dbname=mopar',
 	'emulatePrepare' => true,
 	'username' => 'root',
-	'password' => 'betoven',
+	'password' => 'control123!',
 	'charset' => 'utf8',
 );

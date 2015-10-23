@@ -15,14 +15,14 @@
 		CHtml::listData(Stipobus::model()->findAll(), 'id_tipo_bus', 'desc_tipo_bus'), array('empty'=>'-- Seleccionar --')
 	); ?>
 
-	<b><?php echo $form->labelEx($model,'cantidad_pisos'); ?></b>
-	<?php echo $form->dropDownList($model,'cantidad_pisos',array(1=>'uno', 2=>'dos')); ?>
-
 	<?php echo $form->textFieldRow($model,'carga_maxima',array('style'=>'width:100px')); ?>
-
 	<?php echo $form->fileFieldRow($model,'imagen',array('class'=>'span5','maxlength'=>500)); ?>
-
 	<?php echo $form->textAreaRow($model,'observaciones',array('rows'=>4, 'cols'=>35, 'class'=>'span4')); ?>
+	<b><?php echo $form->labelEx($model,'configuracion'); ?></b>
+    <?php echo CHtml::activeCheckBoxList($model, 'configuracion',
+    	CHtml::listData(scodobjventasextras::model()->findAll(),'id_cod_obj_venta_extra','name')
+    	
+    ); ?>
 
 	<div class="form-actions">
 		<?php $this->widget('bootstrap.widgets.TbButton', array(

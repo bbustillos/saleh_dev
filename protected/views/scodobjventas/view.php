@@ -18,11 +18,11 @@ $this->menu=array(
 
 // print_r(var_dump($this->menu)); die;
 ?>
-
+<?php $baseUrlActual = Yii::app()->request->baseUrl; ?>
+<link rel="stylesheet" href="<?php echo $baseUrlActual; ?>/css/asientos.css">
 <h3>Codificador Objeto de Ventas</h3>
 <h4>Vista #<?php echo $model->id_cod_obj_venta; ?></h4>
 
-<?php $baseUrlActual = Yii::app()->request->baseUrl; ?>
 <div id="baseUrlActual" style="display: none;"><?php echo $baseUrlActual; ?></div>
 <?php $this->widget('bootstrap.widgets.TbDetailView',array(
 	'data'=>$model,
@@ -60,6 +60,7 @@ $this->menu=array(
 <?php $dataProviderDocum = Scodobjventasdocs::model()->search(array('id_cod_obj_venta'=>$model->id_cod_obj_venta)); ?>
 <?php $dataProviderCarac = Scodobjventascaract::model()->search(array('id_cod_obj_venta'=>$model->id_cod_obj_venta)); ?>
 
+
 <h4>Datos Generales</h4>
 <?php if ($dataProviderDatos->itemCount > 0): ?>
 	<?php $this->widget('bootstrap.widgets.TbGridView',array(
@@ -94,6 +95,7 @@ $this->menu=array(
 			),
 		),
 	)); ?>
+
 <?php else: ?>
 	<h5>No existen datos para este objeto</h5>
 <?php endif; ?>
@@ -148,8 +150,8 @@ $this->menu=array(
 				'name'=>'id_tipo_bus',
 				'value'=>'$data->idTipoBus->desc_tipo_bus',
 			),
-			'cantidad_pisos',
 			'carga_maxima',
+			'observaciones',
 			array(
 				'name'=>'imagen',
 				'header'=>'Imagen',
@@ -174,6 +176,7 @@ $this->menu=array(
 			),
 		),
 	)); ?>
+
 <?php else: ?>
 	<h5>No existen caracter&iacute;sticas para este objeto</h5>
 <?php endif; ?>
@@ -194,7 +197,33 @@ $this->menu=array(
 			<td><button id="button_generar" type="button" data-loading-text="Generando..." class="btn btn-primary" autocomplete="off">Generar</button></td>
 		</tr>
 	</table>
-	<div id="div_asientos_conf" style="display: none; border: 1px"></div>
+
+	<!-- Cuerpo de configuracion de asientos -->
+	<div id="div_asientos_conf"></div><br>
+	<div id="div_asignacion_asientos">
+		<table>
+			<caption><div class="cl_titulo_campo">Descripci&oacute;n del Asiento</div></caption>
+			<tr>
+				<td><div class="cl_nombre_campo" >N&uacute;mero:</div></td>&nbsp;
+				<td><div id="div_numero_asiento"></div></td>
+				<td><div id="div_id_asiento"></div></td>
+			</tr>
+			<tr>
+				<td><div class="cl_nombre_campo">Tipo:</div></td>&nbsp;
+				<td>
+					<select id="sel_tipo_asiento">
+						<option> --- </option>
+						<option value="asiento">Asiento</option>
+						<option value="puerta">Puerta</option>
+						<option value="volante">Volante</option>
+						<option value="bano">Ba&ntilde;o</option>
+						<option value="vacio">Vac&iacute;o</option>
+					</select>
+				</td>
+			</tr>
+		</table>
+	</div>
+
 </div>
 <div class="modal-footer">
     <?php $this->widget('bootstrap.widgets.TbButton', array(
@@ -224,15 +253,17 @@ $(document).ready(function(){
 	var $pasillo1 = null;
 	var $pasillo2 = null;
 	var $piso;
+	var $nro_asiento;
 	var $cadenaTabla;
 	var $baseUrlActual = $("#baseUrlActual").text();
 
 	// Obtiene la configuracion realizada y controla vacios
 	$('#button_generar').bind("click", function(){
+		$nro_asiento = 1;
 		obtieneValores();
 		if ($flag) { return; }
 		else {
-			$cadenaTabla="<table>";
+			$cadenaTabla="<table id='table_asientos'>";
 			for (var i = 0; i < $columnas; i++) {
 				$cadenaTabla+="<tr>";
 				for (var j = 0; j < $filas; j++) {
@@ -254,13 +285,15 @@ $(document).ready(function(){
 			};
 			$cadenaTabla+="</table>";
 			$('#div_asientos_conf').html($cadenaTabla).show();
-			$('img').bind("dblclick", clickAlert());
+			$('[rel="asientos"]').bind("click", mostrarValorAsiento);
 		}
 	});
 
 	$('#id_modal_asientos').bind("click", function(){
 		limpiaValores();
-	})
+	});
+
+	$('#sel_tipo_asiento').bind('change', actualizarValorAsiento);
 
 	// Carga las variables de creacion
 	function obtieneValores(){
@@ -324,10 +357,10 @@ $(document).ready(function(){
 	}
 
 	function limpiaValores(){
-		$('#text_col').val("");
+		$('#text_col').val(null);
 		$('#text_fil').val("");
 		$('#text_pas').val("");
-		$('#text_pis').val("");
+		$('#text_pis').val(null);
 		$('#div_asientos_conf').html("")
 							   .hide();
 		ocultarMensajeError();
@@ -349,18 +382,62 @@ $(document).ready(function(){
 
 	function dibujaAsiento(col, fil){
 		var idPos = "pos_"+col+"_"+fil;
-		var $html_asiento = "<td><img id='"+idPos+"' class='posicion' alt='asiento_vacio' src='"+$baseUrlActual+"/images/asiento_vacio.png'/></td>";
+		var $html_asiento = "<td><img id='"+idPos+"' rel='asientos' title='"+$nro_asiento+"' alt='asiento' src='"+$baseUrlActual+"/images/asiento_vacio.png'/></td>";
+		 $nro_asiento++;
 		return $html_asiento;
 	}
 
 	function dibujaVacio(col, fil){
 		var idPos = "pos_"+col+"_"+fil;
-		var $html_asiento = "<td><img id='"+idPos+"' alt='vacio' src='"+$baseUrlActual+"/images/vacio.png'/></td>";
+		var $html_asiento = "<td><img id='"+idPos+"' rel='asientos' title='"+$nro_asiento+"' alt='vacio' src='"+$baseUrlActual+"/images/vacio.png'/></a></td>";
+		$nro_asiento++;
 		return $html_asiento;
 	}
 
-	function clickAlert(){
-		alert('correct');
+	function mostrarValorAsiento(){
+		$('#div_asignacion_asientos').show();
+		var numeroAsiento = '&nbsp;&nbsp;' + $(this).attr('title');
+		var tipoAsiento = $(this).attr('alt');
+		var idAsiento = $(this).attr('id');
+		$('#div_numero_asiento').html(numeroAsiento);
+		$('#sel_tipo_asiento').val(tipoAsiento);
+		$('#div_id_asiento').val(idAsiento);
+	}
+
+	function actualizarValorAsiento(){
+		var idAsiento = $('#div_id_asiento').val();
+		var objAsiento = $('#'+idAsiento);
+		var nuevoTipoAsiento = $('#sel_tipo_asiento').val();
+		console.log("nuevoTipoAsiento: ", nuevoTipoAsiento);
+		var srcImagenAsiento = getNuevoSrc(nuevoTipoAsiento);
+		console.log("nueva src: ", srcImagenAsiento);
+		objAsiento.attr('src', srcImagenAsiento);
+		console.log("imagen cambiada");
+	}
+
+	function getNuevoSrc ($tipoAsiento) {
+		var nuevaCadena;
+		switch ($tipoAsiento) {
+			case 'asiento':
+				nuevaCadena = $baseUrlActual+'/images/asiento_vacio.png';
+				break;
+			case 'puerta':
+				nuevaCadena = $baseUrlActual+'/images/puerta.png';
+				break;
+			case 'volante':
+				nuevaCadena = $baseUrlActual+'/images/volante.png';
+				break;
+			case 'bano':
+				nuevaCadena = $baseUrlActual+'/images/bano.png';
+				break;
+			case 'vacio':
+				nuevaCadena = $baseUrlActual+'/images/vacio.png';
+				break;
+			default:
+				nuevaCadena = $baseUrlActual+'/images/vacio.png';
+				break;
+		}
+		return nuevaCadena;
 	}
 });
 
