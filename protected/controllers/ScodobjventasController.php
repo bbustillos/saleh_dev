@@ -119,7 +119,7 @@ class ScodobjventasController extends Controller
 				$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 		}
 		else
-			throw new CHttpException(400,'Solicitud Invalida.');
+			throw new CHttpException(400,'Solicitud Invalida. Por favor no repita esta solicitud.');
 	}
 
 	/**
