@@ -1,0 +1,39 @@
+#div_asientos_conf {
+	display: none;
+	position: relative;
+}
+
+#div_asignacion_asientos {
+	display: none;
+}
+
+#sel_tipo_asiento {
+	padding: 2px;
+}
+
+#sel_tipo_asiento {
+	height: 30px;
+	font-size:12px;
+}
+
+.cl_nombre_campo {
+	font-size:12px;
+	font-weight:bold;
+}
+
+.cl_titulo_campo {
+	font-size:13px;
+	font-weight:bold;
+	text-decoration: underline;
+}
+
+.modal-body {
+	overflow-y: hidden;
+}
+
+#table_asientos, #div_asignacion_asientos {
+	width:80%;
+    margin-left:10%;
+    margin-right:10%;
+    text-align: center;
+}
